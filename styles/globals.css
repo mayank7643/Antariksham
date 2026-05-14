@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400;500;600&display=swap');
+
+:root {
+  --black:      #07090c;
+  --deep:       #0b0e13;
+  --surface:    #10151c;
+  --panel:      #151c26;
+  --raised:     #1a2230;
+  --white:      #eef1f6;
+  --dim:        rgba(238,241,246,0.50);
+  --faint:      rgba(238,241,246,0.22);
+  --accent:     #3b9eff;
+  --accent-dim: rgba(59,158,255,0.10);
+  --gold:       #c9a96e;
+  --gold-dim:   rgba(201,169,110,0.10);
+  --green:      #34d897;
+  --green-dim:  rgba(52,216,151,0.10);
+  --red:        #f05a5a;
+  --purple:     #9f7aea;
+  --border:     rgba(255,255,255,0.06);
+  --border-hi:  rgba(255,255,255,0.13);
+  --nav-height: 60px;
+  --max-width:  1380px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background:              var(--black);
+  color:                   var(--white);
+  font-family:             'Outfit', system-ui, sans-serif;
+  font-weight:             300;
+  line-height:             1.6;
+  -webkit-font-smoothing:  antialiased;
+  overflow-x:              hidden;
+}
+
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--raised); border-radius: 2px; }
+
+::selection {
+  background: var(--accent-dim);
+  color:      var(--white);
+}
+
+.font-serif { font-family: 'Crimson Pro', Georgia, serif; }
+.font-mono  { font-family: 'DM Mono', monospace; }
+
+.page-container {
+  max-width: var(--max-width);
+  margin:    0 auto;
+  padding:   0 48px;
+}
+
+.glow-divider {
+  height:     1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(59,158,255,0.2) 35%,
+    transparent 100%
+  );
+}
+
+.eyebrow {
+  font-family:    'DM Mono', monospace;
+  font-size:      8px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color:          var(--accent);
+}
+
+*:focus-visible {
+  outline:        2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius:  3px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
