@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 :root {
+  --font-sans:  'Outfit', system-ui, sans-serif;
+  --font-serif: 'Crimson Pro', Georgia, serif;
+  --font-mono:  'DM Mono', monospace;
+
   --black:      #07090c;
   --deep:       #0b0e13;
   --surface:    #10151c;
@@ -32,11 +36,12 @@ html { scroll-behavior: smooth; }
 body {
   background:              var(--black);
   color:                   var(--white);
-  body {
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family:             var(--font-sans);
+  font-size:               15px;
   font-weight:             300;
-  line-height:             1.6;
+  line-height:             1.7;
   -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x:              hidden;
 }
 
@@ -49,8 +54,22 @@ body {
   color:      var(--white);
 }
 
-.font-serif { font-family: var(--font-serif), Georgia, serif; }
-.font-mono  { font-family: var(--font-mono), monospace; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  line-height: 1.15;
+  color:       var(--white);
+  margin:      0;
+}
+
+p { margin: 0; }
+
+a { color: inherit; }
+
+.font-serif { font-family: var(--font-serif); }
+.font-mono  { font-family: var(--font-mono); }
+.font-sans  { font-family: var(--font-sans); }
+
 .page-container {
   max-width: var(--max-width);
   margin:    0 auto;
@@ -68,8 +87,8 @@ body {
 }
 
 .eyebrow {
-  font-family:    'DM Mono', monospace;
-  font-size:      8px;
+  font-family:    var(--font-mono);
+  font-size:      9px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color:          var(--accent);
