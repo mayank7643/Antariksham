@@ -5,24 +5,25 @@ import { usePathname } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { mainNav } from '@/config/navigation'
 import { siteConfig } from '@/config/site'
-import { cn } from '@/lib/utils'
 
 export function Navbar() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] flex items-center justify-between px-12 border-b border-white/[0.06]" style={{ background: 'rgba(7,9,12,0.88)', backdropFilter: 'blur(24px)' }}>
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', background: 'rgba(7,9,12,0.92)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
 
-      <Link href="/" className="flex items-baseline gap-[2px] no-underline">
-        <span className="font-serif text-[21px] font-normal tracking-[0.03em]" style={{ fontFamily: 'Crimson Pro, Georgia, serif' }}>
+      {/* LOGO */}
+      <Link href="/" style={{ display: 'flex', alignItems: 'baseline', gap: '2px', textDecoration: 'none' }}>
+        <span style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '24px', fontWeight: 400, letterSpacing: '0.03em', color: '#ffffff' }}>
           {siteConfig.name}
         </span>
-        <span className="text-[11px] font-light tracking-[0.05em] ml-[1px]" style={{ fontFamily: 'DM Mono, monospace', color: '#3b9eff' }}>
+        <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '13px', fontWeight: 300, color: '#3b9eff', letterSpacing: '0.05em', marginLeft: '1px' }}>
           {siteConfig.tld}
         </span>
       </Link>
 
-      <ul className="flex items-center gap-9 list-none m-0 p-0">
+      {/* NAV LINKS */}
+      <ul style={{ display: 'flex', alignItems: 'center', gap: '40px', listStyle: 'none', margin: 0, padding: 0 }}>
         {mainNav.map((item) => {
           const isActive = pathname === item.href ||
             (item.href !== '/' && pathname.startsWith(item.href))
@@ -31,30 +32,31 @@ export function Navbar() {
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="no-underline transition-colors duration-200"
                 style={{
                   fontFamily:    'DM Mono, monospace',
-                  fontSize:      '11px',
-                  letterSpacing: '0.14em',
+                  fontSize:      '13px',
+                  fontWeight:    400,
+                  letterSpacing: '0.12em',
                   textTransform: 'uppercase',
+                  textDecoration:'none',
                   color: item.isLive
                     ? '#34d897'
                     : isActive
-                    ? '#eef1f6'
-                    : 'rgba(238,241,246,0.5)',
+                    ? '#ffffff'
+                    : 'rgba(240,244,250,0.8)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '7px',
                 }}
               >
                 {item.isLive && (
                   <span style={{
-                    display:      'inline-block',
-                    width:        '5px',
-                    height:       '5px',
+                    width: '6px', height: '6px',
                     borderRadius: '50%',
-                    background:   '#34d897',
-                    boxShadow:    '0 0 8px #34d897',
-                    marginRight:  '7px',
-                    verticalAlign:'middle',
-                    animation:    'blink 2s ease-in-out infinite',
+                    background: '#34d897',
+                    boxShadow: '0 0 8px #34d897',
+                    display: 'inline-block',
+                    animation: 'blink 2s ease-in-out infinite',
                   }} />
                 )}
                 {item.label}
@@ -64,29 +66,27 @@ export function Navbar() {
         })}
       </ul>
 
+      {/* SEARCH */}
       <Link
         href="/search"
-        className="flex items-center gap-2 no-underline transition-colors"
         style={{
-          padding:       '7px 14px',
-          border:        '1px solid rgba(255,255,255,0.06)',
-          borderRadius:  '5px',
-          background:    '#10151c',
-          color:         'rgba(238,241,246,0.22)',
+          display:       'flex',
+          alignItems:    'center',
+          gap:           '8px',
+          padding:       '9px 18px',
+          border:        '1px solid rgba(255,255,255,0.2)',
+          borderRadius:  '6px',
+          background:    'rgba(255,255,255,0.05)',
+          color:         'rgba(240,244,250,0.8)',
           fontFamily:    'DM Mono, monospace',
-          fontSize:      '10px',
+          fontSize:      '12px',
           letterSpacing: '0.1em',
+          textDecoration:'none',
         }}
       >
-        <Search size={11} />
+        <Search size={13} />
         <span>Search</span>
-        <span style={{
-          marginLeft:   '8px',
-          background:   '#151c26',
-          borderRadius: '3px',
-          padding:      '1px 5px',
-          fontSize:     '9px',
-        }}>⌘K</span>
+        <span style={{ marginLeft: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', padding: '2px 6px', fontSize: '10px', color: 'rgba(240,244,250,0.6)' }}>⌘K</span>
       </Link>
 
     </nav>
