@@ -1,8 +1,28 @@
 import type { Metadata, Viewport } from 'next'
+import { Crimson_Pro, DM_Mono, Outfit } from 'next/font/google'
 import { siteConfig } from '@/config/site'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import '@/styles/globals.css'
+
+const crimsonPro = Crimson_Pro({
+  subsets: ['latin'],
+  weight: ['300', '400', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+})
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['300', '400'],
+  variable: '--font-mono',
+})
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600'],
+  variable: '--font-sans',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -11,32 +31,6 @@ export const metadata: Metadata = {
     template: siteConfig.seo.titleTemplate,
   },
   description: siteConfig.description,
-  keywords: [
-    'space news', 'space intelligence', 'NASA', 'SpaceX', 'ISRO',
-    'ISS tracker', 'launch schedule', 'space missions', 'astronomy',
-    'space education', 'antariksham',
-  ],
-  authors:  [{ name: siteConfig.name, url: siteConfig.url }],
-  creator:  siteConfig.name,
-  openGraph: {
-    type:        'website',
-    locale:      siteConfig.locale,
-    url:         siteConfig.url,
-    siteName:    siteConfig.name,
-    title:       siteConfig.seo.defaultTitle,
-    description: siteConfig.description,
-  },
-  twitter: {
-    card:        siteConfig.seo.twitterCard,
-    site:        siteConfig.twitter,
-    creator:     siteConfig.twitter,
-    title:       siteConfig.seo.defaultTitle,
-    description: siteConfig.description,
-  },
-  robots: {
-    index:  true,
-    follow: true,
-  },
 }
 
 export const viewport: Viewport = {
@@ -50,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${crimsonPro.variable} ${dmMono.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body>
         <Navbar />
         <main>{children}</main>
