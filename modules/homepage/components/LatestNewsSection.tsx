@@ -17,7 +17,7 @@ export function LatestNewsSection() {
       <div style={{ display: 'grid', gridTemplateColumns: '1.85fr 1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', overflow: 'hidden' }}>
 
         {/* LEAD */}
-        <div style={{ background: '#10151c', padding: '40px', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+        <div style={{ background: '#10151c', padding: '40px', display: 'flex', flexDirection: 'column', cursor: 'pointer', justifyContent: 'space-between' }}>
           <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3b9eff', marginBottom: '16px' }}>NASA · Artemis</div>
           <h2 style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '22px', fontWeight: 400, lineHeight: 1.25, color: '#ffffff', marginBottom: '14px' }}>
             Artemis III Moon Landing Delayed Again — NASA Cites Spacesuit Readiness and Orion Heat Shield Concerns
