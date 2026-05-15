@@ -22,7 +22,7 @@ export function HeroSection() {
           <h1 style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: 'clamp(42px, 4.5vw, 68px)', fontWeight: 400, lineHeight: 1.1, letterSpacing: '-0.01em', marginBottom: '28px', color: '#ffffff' }}>
             Exploring the Universe<br />
             Through{' '}
-            <em style={{ fontStyle: 'italic', color: '#3b9eff', fontWeight: 300 }}>Knowledge,</em>
+            <span style={{  fontStyle: 'normal', fontWeight: 400}}>  Knowledge,</span>
             <br />
             Research &amp; Discovery
           </h1>
