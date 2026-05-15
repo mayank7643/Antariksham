@@ -19,10 +19,10 @@ export function LatestNewsSection() {
         {/* LEAD */}
         <div style={{ background: '#10151c', padding: '40px', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
           <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3b9eff', marginBottom: '16px' }}>NASA · Artemis</div>
-          <h2 style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '28px', fontWeight: 400, lineHeight: 1.2, color: '#ffffff', marginBottom: '16px', flex: 1 }}>
+          <h2 style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: '22px', fontWeight: 400, lineHeight: 1.25, color: '#ffffff', marginBottom: '14px' }}>
             Artemis III Moon Landing Delayed Again — NASA Cites Spacesuit Readiness and Orion Heat Shield Concerns
           </h2>
-          <p style={{ fontSize: '15px', fontWeight: 400, lineHeight: 1.7, color: 'rgba(240,244,250,0.8)', marginBottom: '24px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 400, lineHeight: 1.7, color: 'rgba(240,244,250,0.85)', marginBottom: '16px' }}>
             The agency has pushed the first crewed lunar landing since Apollo 17 past its 2026 target, citing ongoing development delays with Axiom Space's xEMU spacesuit system and outstanding structural certification work on Orion's heat shield.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.08)', fontFamily: 'DM Mono, monospace', fontSize: '11px', color: 'rgba(240,244,250,0.5)', marginTop: 'auto' }}>
