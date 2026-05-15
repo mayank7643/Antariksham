@@ -4,6 +4,7 @@ import { siteConfig } from '@/config/site'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import '@/styles/globals.css'
+import '@/styles/responsive.css'
 
 const crimsonPro = Crimson_Pro({
   subsets: ['latin'],
