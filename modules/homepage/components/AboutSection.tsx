@@ -2,43 +2,39 @@ import Link from 'next/link'
 
 export function AboutSection() {
   return (
-    <section style={{ padding: '70px 0' }}>
+    <section style={{ padding: '64px 0' }}>
+      <div style={{ padding: '0 24px', maxWidth: '1380px', margin: '0 auto' }}>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '60px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'center' }}>
 
-        {/* LEFT */}
-        <div>
-          <blockquote style={{ fontFamily: 'Crimson Pro, serif', fontSize: 'clamp(18px, 2.2vw, 27px)', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.55, color: 'rgba(238,241,246,0.5)', maxWidth: '660px', marginBottom: '20px', margin: '0 0 20px 0', padding: 0, border: 'none' }}>
-            "<strong style={{ fontStyle: 'normal', color: '#eef1f6', fontWeight: 400 }}>Antariksham</strong> is built on a simple belief — that space belongs to everyone, and understanding it should be accessible, scientific, and deeply honest."
-          </blockquote>
-          <p style={{ fontSize: '12px', fontWeight: 300, color: 'rgba(238,241,246,0.22)', lineHeight: 1.75, maxWidth: '540px', margin: '0 0 28px 0' }}>
-            An independent platform committed to scientific accuracy, editorial integrity, and building the most credible space knowledge ecosystem on the web. Not a news portal. Not a blog. A space intelligence organization.
-          </p>
-          <Link href="/about" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 22px', border: '1px solid rgba(255,255,255,0.13)', color: 'rgba(238,241,246,0.5)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', borderRadius: '4px', fontFamily: 'DM Mono, monospace' }}>
-            Our Mission →
-          </Link>
+          <div>
+            <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '11px', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#3b9eff', marginBottom: '20px' }}>Our Mission</div>
+            <blockquote style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: 'clamp(22px, 3vw, 32px)', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.45, color: '#ffffff', marginBottom: '24px', padding: 0, border: 'none' }}>
+              "Antariksham is built on a simple belief — that space belongs to everyone, and understanding it should be <strong style={{ fontStyle: 'normal', fontWeight: 400 }}>accessible, scientific, and deeply honest.</strong>"
+            </blockquote>
+            <p style={{ fontSize: '15px', lineHeight: 1.75, color: 'rgba(240,244,250,0.75)', marginBottom: '32px' }}>
+              An independent platform committed to scientific accuracy, editorial integrity, and building the most credible space knowledge ecosystem on the web. Not a news portal. Not a blog. A space intelligence organization.
+            </p>
+            <Link href="/about" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '13px 24px', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(240,244,250,0.85)', fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', borderRadius: '6px', fontFamily: 'DM Mono, monospace' }}>
+              Our Mission →
+            </Link>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            {[
+              { num: '47',   label: 'Missions\nTracked' },
+              { num: '6',    label: 'Live\nSystems' },
+              { num: '.org', label: 'Trust\nFirst' },
+            ].map((stat) => (
+              <div key={stat.label} style={{ background: '#10151c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px 16px', textAlign: 'center' }}>
+                <div style={{ fontFamily: 'Crimson Pro, Georgia, serif', fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 300, color: '#ffffff', lineHeight: 1, marginBottom: '10px' }}>{stat.num}</div>
+                <div style={{ fontFamily: 'DM Mono, monospace', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(240,244,250,0.5)', whiteSpace: 'pre-line', lineHeight: 1.5 }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
         </div>
-
-        {/* RIGHT — STATS */}
-        <div style={{ display: 'flex', gap: '40px', flexShrink: 0 }}>
-          {[
-            { num: '47',   label: 'Missions tracked' },
-            { num: '6',    label: 'Live systems' },
-            { num: '.org', label: 'Trust-first' },
-          ].map((stat) => (
-            <div key={stat.label} style={{ textAlign: 'center' }}>
-              <span style={{ fontFamily: 'Crimson Pro, serif', fontSize: '38px', fontWeight: 300, display: 'block', lineHeight: 1, marginBottom: '6px' }}>
-                {stat.num}
-              </span>
-              <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '8px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(238,241,246,0.22)' }}>
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </div>
-
       </div>
-
     </section>
   )
 }
