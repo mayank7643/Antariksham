@@ -37,36 +37,32 @@ export function NewsPage({ articles, featured, total }: Props) {
     <div style={{ background: 'var(--black)', minHeight: '100vh', paddingTop: 'var(--nav-height)' }}>
 
       {/* Header */}
-      <div style={{ borderBottom: '1px solid var(--border)', padding: '48px 0 32px' }}>
-        <div className="page-container">
-          <span className="eyebrow">Space Intelligence</span>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: '#fff', margin: '0 0 16px' }}>
-            Latest News
-          </h1>
-          <p style={{ color: 'var(--dim)', fontSize: '16px', maxWidth: '560px', margin: 0 }}>
-            Scientific journalism, mission updates, and discoveries from across the space industry.
-          </p>
+      <div style={{ borderBottom: '1px solid var(--border)', padding: '48px 24px 32px' }}>
+        <span className="eyebrow">Space Intelligence</span>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: '#fff', margin: '0 0 16px' }}>
+          Latest News
+        </h1>
+        <p style={{ color: 'var(--dim)', fontSize: '16px', maxWidth: '560px', margin: 0 }}>
+          Scientific journalism, mission updates, and discoveries from across the space industry.
+        </p>
 
-          {/* Category filter */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '28px' }}>
-            <FilterBtn active={activeCategory === null} onClick={() => setActiveCategory(null)} color="var(--accent)">
-              All
+        {/* Category filter */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '28px' }}>
+          <FilterBtn active={activeCategory === null} onClick={() => setActiveCategory(null)} color="var(--accent)">All</FilterBtn>
+          {CATEGORIES.map(cat => (
+            <FilterBtn
+              key={cat}
+              active={activeCategory === cat}
+              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+              color={CAT_COLORS[cat]}
+            >
+              {cat}
             </FilterBtn>
-            {CATEGORIES.map(cat => (
-              <FilterBtn
-                key={cat}
-                active={activeCategory === cat}
-                onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-                color={CAT_COLORS[cat]}
-              >
-                {cat}
-              </FilterBtn>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 
-      <div className="page-container" style={{ padding: '48px' }}>
+      <div style={{ padding: '48px 24px' }}>
 
         {/* Empty state */}
         {articles.length === 0 && (
@@ -79,16 +75,21 @@ export function NewsPage({ articles, featured, total }: Props) {
           </div>
         )}
 
-        {/* Lead article */}
+        {/* Lead article — stacked layout, works on all screen sizes */}
         {lead && !activeCategory && (
-          <div style={{ marginBottom: '48px' }}>
+          <div style={{ marginBottom: '32px' }}>
             <a href={`/news/${lead.slug}`} style={{ display: 'block', textDecoration: 'none' }}>
               <div
-                style={{ display: 'grid', gridTemplateColumns: lead.featuredImage ? '1fr 420px' : '1fr', gap: '0', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
+                style={{ display: 'flex', flexDirection: 'column', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border-hi)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               >
-                <div style={{ padding: '36px' }}>
+                {/* Image on top */}
+                {lead.featuredImage && (
+                  <div style={{ backgroundImage: `url(${lead.featuredImage})`, backgroundSize: 'cover', backgroundPosition: 'center', height: 'clamp(200px, 35vw, 420px)', width: '100%' }} />
+                )}
+                {/* Content below */}
+                <div style={{ padding: 'clamp(20px, 4vw, 36px)' }}>
                   {lead.articleType === 'breaking-news' && (
                     <span style={{ display: 'inline-block', fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#07090c', background: 'var(--red)', padding: '3px 8px', borderRadius: '3px', marginBottom: '14px' }}>
                       Breaking
@@ -101,15 +102,12 @@ export function NewsPage({ articles, featured, total }: Props) {
                   <p style={{ color: 'var(--dim)', fontSize: '15px', lineHeight: 1.7, margin: '0 0 24px' }}>
                     {lead.excerpt}
                   </p>
-                  <div style={{ display: 'flex', gap: '16px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--faint)' }}>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--faint)' }}>
                     {lead.author && <span>{lead.author.name}</span>}
                     {lead.publishedAt && <span>{timeAgo(lead.publishedAt)}</span>}
                     <span>{lead.readingTime} min read</span>
                   </div>
                 </div>
-                {lead.featuredImage && (
-                  <div style={{ backgroundImage: `url(${lead.featuredImage})`, backgroundSize: 'cover', backgroundPosition: 'center', minHeight: '300px' }} />
-                )}
               </div>
             </a>
           </div>
@@ -117,7 +115,7 @@ export function NewsPage({ articles, featured, total }: Props) {
 
         {/* Secondary row */}
         {secondary.length > 0 && !activeCategory && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px,1fr))', gap: '16px', marginBottom: '48px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px,1fr))', gap: '16px', marginBottom: '32px' }}>
             {secondary.map(a => <SmallCard key={a.id} article={a} />)}
           </div>
         )}
@@ -146,8 +144,9 @@ export function NewsPage({ articles, featured, total }: Props) {
   )
 }
 
-// ── Filter button ─────────────────────────────────────────────
-function FilterBtn({ active, onClick, color, children }: { active: boolean; onClick: () => void; color: string; children: React.ReactNode }) {
+function FilterBtn({ active, onClick, color, children }: {
+  active: boolean; onClick: () => void; color: string; children: React.ReactNode
+}) {
   return (
     <button onClick={onClick} style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '6px 14px', borderRadius: '4px', border: '1px solid', cursor: 'pointer', background: active ? color : 'transparent', borderColor: active ? color : 'var(--border)', color: active ? '#07090c' : 'var(--dim)', transition: 'all 0.15s' }}>
       {children}
@@ -155,14 +154,7 @@ function FilterBtn({ active, onClick, color, children }: { active: boolean; onCl
   )
 }
 
-// ── Small card ────────────────────────────────────────────────
 function SmallCard({ article }: { article: ArticleCard }) {
-  const CAT_COLORS: Record<string, string> = {
-    NASA: '#3b9eff', SpaceX: '#9f7aea', ISRO: '#f97316',
-    ESA: '#34d897', JAXA: '#c9a96e', Astronomy: '#3b9eff',
-    Discoveries: '#34d897', Technology: '#9f7aea',
-    Missions: '#c9a96e', Science: '#f0f4fa',
-  }
   return (
     <a href={`/news/${article.slug}`} style={{ textDecoration: 'none' }}>
       <div
@@ -171,7 +163,7 @@ function SmallCard({ article }: { article: ArticleCard }) {
         onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
       >
         {article.featuredImage && (
-          <div style={{ backgroundImage: `url(${article.featuredImage})`, backgroundSize: 'cover', backgroundPosition: 'center', height: '140px', flexShrink: 0 }} />
+          <div style={{ backgroundImage: `url(${article.featuredImage})`, backgroundSize: 'cover', backgroundPosition: 'center', height: '160px', flexShrink: 0 }} />
         )}
         <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
           {article.articleType === 'breaking-news' && (
@@ -193,4 +185,4 @@ function SmallCard({ article }: { article: ArticleCard }) {
       </div>
     </a>
   )
-                    }
+      }
