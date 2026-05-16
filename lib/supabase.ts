@@ -1,3 +1,14 @@
-// Supabase client — configured in Month 2
-export const supabase = null
-export const supabaseAdmin = () => null
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient(supabaseUrl, supabaseAnon)
+
+export const supabaseAdmin = () => {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!serviceKey) throw new Error('SUPABASE_SERVICE_ROLE_KEY not set')
+  return createClient(supabaseUrl, serviceKey, {
+    auth: { persistSession: false },
+  })
+}
