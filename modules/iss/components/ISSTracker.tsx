@@ -110,13 +110,17 @@ export function ISSTracker({ initialPosition, crew }: Props) {
                 The map must be a flat equirectangular projection to align with lat/lng math.
                 Free source: https://simplemaps.com/resources/svg-world or naturalearthdata.com
             ── */}
-            <image
-              href="/images/world-map.svg"
-              x={0} y={0}
-              width={MAP_W} height={MAP_H}
-              opacity={0.12}
-              preserveAspectRatio="none"
-            />
+            {/* World map — simplemaps SVG, equirectangular, rescaled to fit viewBox */}
+<image
+  href="/images/world-map.svg"
+  x={0} y={-43}
+  width={MAP_W} height={MAP_H + 86}
+  preserveAspectRatio="none"
+  style={{
+    filter: 'brightness(0) invert(1)',
+    opacity: 0.08,
+  }}
+/>
 
             {/* ── Latitude grid lines ── */}
             {[-60,-30,0,30,60].map(lat => {
