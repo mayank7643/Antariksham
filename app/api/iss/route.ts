@@ -1,35 +1,47 @@
 import { NextResponse } from 'next/server'
 
-// GET /api/iss — proxies ISS position to avoid CORS issues
+// ISS_ID for the International Space Station on wheretheiss.at
+const ISS_ID = 25544
+
+// GET /api/iss — proxies ISS position and crew data
 export async function GET() {
   try {
-    const [posRes, crewRes] = await Promise.all([
-      fetch('https://api.open-notify.org/iss-now.json', { cache: 'no-store' }),
-      fetch('https://api.open-notify.org/astros.json',  { next: { revalidate: 3600 } }),
-    ])
+    // wheretheiss.at is reliable and returns lat, lng, altitude, velocity
+    const posRes = await fetch(
+      `https://api.wheretheiss.at/v1/satellites/${ISS_ID}`,
+      { cache: 'no-store' }
+    )
 
-    if (!posRes.ok || !crewRes.ok) {
-      throw new Error('ISS API error')
-    }
+    if (!posRes.ok) throw new Error(`Position API error: ${posRes.status}`)
 
-    const posData  = await posRes.json()
-    const crewData = await crewRes.json()
+    const pos = await posRes.json()
 
     return NextResponse.json({
       position: {
-        latitude:  parseFloat(posData.iss_position.latitude),
-        longitude: parseFloat(posData.iss_position.longitude),
-        altitude:  408,
-        velocity:  27600,
-        timestamp: posData.timestamp,
+        latitude:  pos.latitude,
+        longitude: pos.longitude,
+        altitude:  Math.round(pos.altitude),
+        velocity:  Math.round(pos.velocity),
+        timestamp: pos.timestamp,
       },
-      crew: (crewData.people as any[]).filter(p => p.craft === 'ISS'),
+      // Crew data — hardcoded for now since open-notify is down
+      // Update manually when crew changes
+      crew: [
+        { name: 'Oleg Kononenko',    craft: 'ISS' },
+        { name: 'Nikolai Chub',      craft: 'ISS' },
+        { name: 'Tracy Dyson',       craft: 'ISS' },
+        { name: 'Matthew Dominick',  craft: 'ISS' },
+        { name: 'Michael Barratt',   craft: 'ISS' },
+        { name: 'Jeanette Epps',     craft: 'ISS' },
+        { name: 'Alexander Grebenkin',craft: 'ISS' },
+      ],
     })
 
   } catch (err: any) {
+    console.error('ISS API error:', err)
     return NextResponse.json(
       { error: err.message || 'ISS API failed' },
       { status: 500 }
     )
   }
-    }
+}
