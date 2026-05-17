@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { fetchISSPosition, latLngToSVG } from '@/modules/iss/services/getISS'
+import { latLngToSVG } from '@/modules/iss/services/getISS'
 import type { ISSPosition, ISSCrew } from '@/types/api'
 
 interface Props {
@@ -29,19 +29,17 @@ export function ISSTracker({ initialPosition, crew }: Props) {
 
     // Poll every 5 seconds
     intervalRef.current = setInterval(async () => {
-      const pos = await fetchISSPosition()
-      if (pos) {
-        setPosition(pos)
-        setLastUpdate(new Date())
-        setIsLive(true)
-        const pt = latLngToSVG(pos.latitude, pos.longitude, MAP_W, MAP_H)
-        setTrail(prev => {
-          const next = [...prev, pt]
-          return next.slice(-MAX_TRAIL)
-        })
-      } else {
-        setIsLive(false)
-      }
+      const res  = await fetch('/api/iss')
+const data = await res.json()
+if (data.position) {
+  setPosition(data.position)
+  setLastUpdate(new Date())
+  setIsLive(true)
+  const pt = latLngToSVG(data.position.latitude, data.position.longitude, MAP_W, MAP_H)
+  setTrail(prev => [...prev, pt].slice(-MAX_TRAIL))
+} else {
+  setIsLive(false)
+}
     }, 5000)
 
     return () => {
