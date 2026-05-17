@@ -45,7 +45,7 @@ export function APODSection({ apod }: Props) {
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(32px,5vw,56px) clamp(20px,5vw,48px)' }}>
 
         {/* Image or Video */}
-        {apod.media_type === 'image' ? (
+        {apod.mediaType === 'image' ? (
           <div style={{ width: '100%', borderRadius: '16px', overflow: 'hidden', marginBottom: '36px', background: '#10151c' }}>
             <img
               src={apod.hdurl || apod.url}
