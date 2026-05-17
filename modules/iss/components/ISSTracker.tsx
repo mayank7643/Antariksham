@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
+import { Navigation, Gauge, MoveVertical, Globe, Satellite, Users } from 'lucide-react'
 import { latLngToSVG } from '@/modules/iss/services/getISS'
 import type { ISSPosition, ISSCrew } from '@/types/api'
 
@@ -9,42 +10,44 @@ interface Props {
   crew:            ISSCrew[]
 }
 
-const MAP_W = 1000
-const MAP_H = 500
-const MAX_TRAIL = 60 // keep last 60 positions for trail
+const MAP_W     = 1000
+const MAP_H     = 500
+const MAX_TRAIL = 80
 
 export function ISSTracker({ initialPosition, crew }: Props) {
-  const [position, setPosition]   = useState<ISSPosition | null>(initialPosition)
-  const [trail, setTrail]         = useState<{ x: number; y: number }[]>([])
+  const [position, setPosition]     = useState<ISSPosition | null>(initialPosition)
+  const [trail, setTrail]           = useState<{ x: number; y: number }[]>([])
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
-  const [isLive, setIsLive]       = useState(true)
-  const intervalRef               = useRef<NodeJS.Timeout | null>(null)
+  const [isLive, setIsLive]         = useState(true)
+  const [crewList, setCrewList]     = useState<ISSCrew[]>(crew)
+  const intervalRef                 = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    // Add initial position to trail
     if (initialPosition) {
       const pt = latLngToSVG(initialPosition.latitude, initialPosition.longitude, MAP_W, MAP_H)
       setTrail([pt])
     }
 
-    // Poll every 5 seconds
     intervalRef.current = setInterval(async () => {
-      const res  = await fetch('/api/iss')
-const data = await res.json()
-if (data.position) {
-  setPosition(data.position)
-  setLastUpdate(new Date())
-  setIsLive(true)
-  const pt = latLngToSVG(data.position.latitude, data.position.longitude, MAP_W, MAP_H)
-  setTrail(prev => [...prev, pt].slice(-MAX_TRAIL))
-} else {
-  setIsLive(false)
-}
+      try {
+        const res  = await fetch('/api/iss')
+        const data = await res.json()
+        if (data.position) {
+          setPosition(data.position)
+          setLastUpdate(new Date())
+          setIsLive(true)
+          if (data.crew?.length) setCrewList(data.crew)
+          const pt = latLngToSVG(data.position.latitude, data.position.longitude, MAP_W, MAP_H)
+          setTrail(prev => [...prev, pt].slice(-MAX_TRAIL))
+        } else {
+          setIsLive(false)
+        }
+      } catch {
+        setIsLive(false)
+      }
     }, 5000)
 
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [])
 
   const dot = position
@@ -54,115 +57,157 @@ if (data.position) {
   return (
     <div style={{ background: 'var(--black)', minHeight: '100vh', paddingTop: 'var(--nav-height)' }}>
 
-      {/* ── Header ──────────────────────────────────── */}
+      {/* ── Header ─────────────────────────────────── */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', padding: 'clamp(24px,4vw,48px) clamp(20px,5vw,48px) 24px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#34d897' : '#f05a5a', display: 'inline-block', boxShadow: isLive ? '0 0 8px #34d897' : 'none' }} />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: isLive ? '#34d897' : '#f05a5a' }}>
-                {isLive ? 'Live' : 'Signal Lost'}
-              </span>
-            </div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(24px,3.5vw,40px)', fontWeight: 300, color: '#f0f4fa', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
-              ISS Live Tracker
-            </h1>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'rgba(240,244,250,0.35)', margin: 0, letterSpacing: '0.05em' }}>
-              Updates every 5 seconds · {crew.length} crew aboard
-            </p>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: isLive ? '#34d897' : '#f05a5a',
+              display: 'inline-block',
+              boxShadow: isLive ? '0 0 10px #34d897' : 'none',
+            }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: isLive ? '#34d897' : '#f05a5a' }}>
+              {isLive ? 'Live Feed Active' : 'Signal Lost'}
+            </span>
           </div>
 
-          {/* Live stats */}
-          {position && (
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-              <StatBox label="Latitude"  value={`${position.latitude.toFixed(4)}°`} />
-              <StatBox label="Longitude" value={`${position.longitude.toFixed(4)}°`} />
-              <StatBox label="Altitude"  value={`${position.altitude} km`} />
-              <StatBox label="Velocity"  value={`${position.velocity.toLocaleString()} km/h`} />
-            </div>
-          )}
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(24px,3.5vw,42px)', fontWeight: 300, color: '#f0f4fa', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+            ISS Live Tracker
+          </h1>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'rgba(240,244,250,0.35)', margin: '0 0 28px', letterSpacing: '0.05em' }}>
+            Live Telemetry Data · Updates every 5 seconds
+          </p>
+
+          {/* ── Stat cards ───────────────────────────── */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px,1fr))', gap: '12px' }}>
+            <StatCard icon={<Globe size={13} />}       label="Latitude"  value={position ? `${position.latitude.toFixed(4)}°`  : '—'} />
+            <StatCard icon={<Navigation size={13} />}  label="Longitude" value={position ? `${position.longitude.toFixed(4)}°` : '—'} />
+            <StatCard icon={<MoveVertical size={13} />} label="Altitude" value={position ? `${position.altitude} km`           : '—'} />
+            <StatCard icon={<Gauge size={13} />}        label="Velocity" value={position ? `${position.velocity.toLocaleString()} km/h` : '—'} />
+          </div>
         </div>
       </div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,40px) clamp(20px,5vw,48px)' }}>
 
-        {/* ── World Map ────────────────────────────── */}
-        <div style={{ width: '100%', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '28px', background: '#050810', position: 'relative' }}>
+        {/* ── World Map Tracker ───────────────────────
+            DROP-IN ZONE: Replace the <image> tag below with your own world-map.svg
+            The viewBox is 0 0 1000 500 — your SVG must match this coordinate space.
+            Place your world-map.svg in /public/images/world-map.svg and update the href.
+        ─────────────────────────────────────────── */}
+        <div style={{ width: '100%', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '28px', background: '#020508', position: 'relative' }}>
           <svg
             viewBox={`0 0 ${MAP_W} ${MAP_H}`}
             style={{ width: '100%', display: 'block' }}
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Ocean background */}
-            <rect width={MAP_W} height={MAP_H} fill="#050810" />
+            {/* ── Ocean background ── */}
+            <rect width={MAP_W} height={MAP_H} fill="#020a14" />
 
-            {/* Grid lines */}
+            {/* ── World map SVG background ──
+                SWAP THIS: replace href with "/images/world-map.svg" once you have it.
+                The map must be a flat equirectangular projection to align with lat/lng math.
+                Free source: https://simplemaps.com/resources/svg-world or naturalearthdata.com
+            ── */}
+            <image
+              href="/images/world-map.svg"
+              x={0} y={0}
+              width={MAP_W} height={MAP_H}
+              opacity={0.12}
+              preserveAspectRatio="none"
+            />
+
+            {/* ── Latitude grid lines ── */}
             {[-60,-30,0,30,60].map(lat => {
               const y = ((90 - lat) / 180) * MAP_H
-              return <line key={lat} x1={0} y1={y} x2={MAP_W} y2={y} stroke="rgba(59,158,255,0.08)" strokeWidth={0.5} />
+              return (
+                <g key={lat}>
+                  <line x1={0} y1={y} x2={MAP_W} y2={y} stroke="rgba(59,158,255,0.07)" strokeWidth={0.5} />
+                  <text x={6} y={y - 3} fill="rgba(240,244,250,0.2)" fontSize={10} fontFamily="monospace">{lat}°</text>
+                </g>
+              )
             })}
+
+            {/* ── Longitude grid lines ── */}
             {[-120,-60,0,60,120].map(lng => {
               const x = ((lng + 180) / 360) * MAP_W
-              return <line key={lng} x1={x} y1={0} x2={x} y2={MAP_H} stroke="rgba(59,158,255,0.08)" strokeWidth={0.5} />
+              return (
+                <g key={lng}>
+                  <line x1={x} y1={0} x2={x} y2={MAP_H} stroke="rgba(59,158,255,0.07)" strokeWidth={0.5} />
+                  <text x={x + 3} y={MAP_H - 6} fill="rgba(240,244,250,0.2)" fontSize={10} fontFamily="monospace">{lng}°</text>
+                </g>
+              )
             })}
 
-            {/* Equator */}
-            <line x1={0} y1={MAP_H/2} x2={MAP_W} y2={MAP_H/2} stroke="rgba(59,158,255,0.15)" strokeWidth={1} />
+            {/* ── Equator ── */}
+            <line x1={0} y1={MAP_H/2} x2={MAP_W} y2={MAP_H/2} stroke="rgba(59,158,255,0.18)" strokeWidth={1} strokeDasharray="4 4" />
 
-            {/* ISS trail */}
-            {trail.length > 1 && trail.map((pt, i) => {
+            {/* ── ISS trail ── */}
+            {trail.map((pt, i) => {
               if (i === 0) return null
               const prev = trail[i - 1]
-              // Don't draw line if it crosses the date line (large x jump)
               if (Math.abs(pt.x - prev.x) > MAP_W / 2) return null
-              const opacity = (i / trail.length) * 0.6
               return (
                 <line
                   key={i}
-                  x1={prev.x} y1={prev.y}
-                  x2={pt.x}   y2={pt.y}
+                  x1={prev.x} y1={prev.y} x2={pt.x} y2={pt.y}
                   stroke="#3b9eff"
                   strokeWidth={1.5}
-                  strokeOpacity={opacity}
+                  strokeOpacity={(i / trail.length) * 0.7}
                 />
               )
             })}
 
-            {/* ISS dot */}
+            {/* ── ISS marker — satellite icon ── */}
             {dot && (
-              <>
-                {/* Pulse ring */}
-                <circle cx={dot.x} cy={dot.y} r={12} fill="none" stroke="#34d897" strokeWidth={1} strokeOpacity={0.3}>
-                  <animate attributeName="r" values="8;18;8" dur="2s" repeatCount="indefinite" />
-                  <animate attributeName="stroke-opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite" />
+              <g transform={`translate(${dot.x}, ${dot.y})`}>
+                {/* Outer pulse */}
+                <circle cx={0} cy={0} r={14} fill="none" stroke="#34d897" strokeWidth={1} strokeOpacity={0.2}>
+                  <animate attributeName="r"              values="10;22;10" dur="2.5s" repeatCount="indefinite" />
+                  <animate attributeName="stroke-opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite" />
                 </circle>
-                {/* ISS marker */}
-                <circle cx={dot.x} cy={dot.y} r={5} fill="#34d897" />
-                <circle cx={dot.x} cy={dot.y} r={3} fill="#07090c" />
-              </>
+                {/* Inner glow */}
+                <circle cx={0} cy={0} r={8} fill="rgba(52,216,151,0.15)" />
+                {/* Satellite body — horizontal bar */}
+                <rect x={-8} y={-2} width={16} height={4} rx={1} fill="#34d897" />
+                {/* Solar panels */}
+                <rect x={-14} y={-5} width={5} height={10} rx={1} fill="#3b9eff" opacity={0.9} />
+                <rect x={9}   y={-5} width={5} height={10} rx={1} fill="#3b9eff" opacity={0.9} />
+                {/* Center dot */}
+                <circle cx={0} cy={0} r={2.5} fill="#f0f4fa" />
+              </g>
             )}
           </svg>
 
-          {/* Last update timestamp */}
+          {/* Timestamp overlay */}
           <div style={{ position: 'absolute', bottom: '12px', right: '16px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'rgba(240,244,250,0.3)', letterSpacing: '0.05em' }}>
-            Updated {lastUpdate.toLocaleTimeString()}
+            {lastUpdate.toLocaleTimeString()}
+          </div>
+
+          {/* Corner label */}
+          <div style={{ position: 'absolute', top: '12px', left: '16px', fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(59,158,255,0.5)' }}>
+            Equirectangular Projection
           </div>
         </div>
 
-        {/* ── Crew Section ─────────────────────────── */}
-        {crew.length > 0 && (
+        {/* ── Crew Section ────────────────────────── */}
+        {crewList.length > 0 && (
           <div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#3b9eff', display: 'block', marginBottom: '16px' }}>
-              Current Crew — {crew.length} Astronauts
-            </span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-              {crew.map((member, i) => (
-                <div key={i} style={{ background: '#10151c', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(59,158,255,0.15)', border: '1px solid rgba(59,158,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '16px' }}>
-                    👨‍🚀
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <Users size={13} color="#3b9eff" />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#3b9eff' }}>
+                Current Crew — {crewList.length} Aboard
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px,1fr))', gap: '12px' }}>
+              {crewList.map((member, i) => (
+                <div key={i} style={{ background: '#0b0f18', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'rgba(59,158,255,0.1)', border: '1px solid rgba(59,158,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Satellite size={14} color="#3b9eff" />
                   </div>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#f0f4fa', margin: '0 0 3px', fontWeight: 500 }}>
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#f0f4fa', margin: '0 0 3px' }}>
                       {member.name}
                     </p>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#34d897' }}>
@@ -186,16 +231,19 @@ if (data.position) {
   )
 }
 
-// ── Stat box ──────────────────────────────────────────────────
-function StatBox({ label, value }: { label: string; value: string }) {
+// ── Stat card ─────────────────────────────────────────────────
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div style={{ background: '#10151c', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '12px 16px', minWidth: '120px' }}>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(240,244,250,0.35)', display: 'block', marginBottom: '4px' }}>
-        {label}
-      </span>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#34d897', letterSpacing: '0.05em' }}>
+    <div style={{ background: '#0b0f18', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '14px 16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+        <span style={{ color: 'rgba(240,244,250,0.35)' }}>{icon}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(240,244,250,0.35)' }}>
+          {label}
+        </span>
+      </div>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#34d897', letterSpacing: '0.05em' }}>
         {value}
       </span>
     </div>
   )
-          }
+                  }
