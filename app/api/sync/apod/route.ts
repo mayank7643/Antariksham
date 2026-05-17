@@ -60,7 +60,32 @@ export async function POST(req: Request) {
 }
 
 // GET /api/sync/apod — returns current cached APOD from Supabase
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const secret = searchParams.get('secret')
+
+  if (secret === process.env.CRON_SECRET) {
+    // Reuse POST logic via internal fetch
+    return POST(new Request(req.url, {
+      method: 'POST',
+      headers: { 'x-cron-secret': secret },
+    }))
+  }
+
+  // No secret — return cached APOD
+  const db = supabaseAdmin()
+  const { data, error } = await db
+    .from('live_data')
+    .select('value, synced_at')
+    .eq('key', 'apod_today')
+    .single()
+
+  if (error || !data) {
+    return NextResponse.json({ error: 'No APOD cached yet' }, { status: 404 })
+  }
+
+  return NextResponse.json({ apod: data.value, synced_at: data.synced_at })
+}
   const db = supabaseAdmin()
   const { data, error } = await db
     .from('live_data')
