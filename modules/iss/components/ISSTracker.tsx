@@ -57,21 +57,15 @@ export function ISSTracker({ initialPosition, crew }: Props) {
   return (
     <div style={{ background: 'var(--black)', minHeight: '100vh', paddingTop: 'var(--nav-height)' }}>
 
-      {/* ── Header ─────────────────────────────────── */}
+      {/* Header */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', padding: 'clamp(24px,4vw,48px) clamp(20px,5vw,48px) 24px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-            <span style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: isLive ? '#34d897' : '#f05a5a',
-              display: 'inline-block',
-              boxShadow: isLive ? '0 0 10px #34d897' : 'none',
-            }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: isLive ? '#34d897' : '#f05a5a', display: 'inline-block', boxShadow: isLive ? '0 0 10px #34d897' : 'none' }} />
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: isLive ? '#34d897' : '#f05a5a' }}>
               {isLive ? 'Live Feed Active' : 'Signal Lost'}
             </span>
           </div>
-
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(24px,3.5vw,42px)', fontWeight: 300, color: '#f0f4fa', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
             ISS Live Tracker
           </h1>
@@ -79,50 +73,47 @@ export function ISSTracker({ initialPosition, crew }: Props) {
             Live Telemetry Data · Updates every 5 seconds
           </p>
 
-          {/* ── Stat cards ───────────────────────────── */}
+          {/* Stat cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px,1fr))', gap: '12px' }}>
-            <StatCard icon={<Globe size={13} />}       label="Latitude"  value={position ? `${position.latitude.toFixed(4)}°`  : '—'} />
-            <StatCard icon={<Navigation size={13} />}  label="Longitude" value={position ? `${position.longitude.toFixed(4)}°` : '—'} />
-            <StatCard icon={<MoveVertical size={13} />} label="Altitude" value={position ? `${position.altitude} km`           : '—'} />
-            <StatCard icon={<Gauge size={13} />}        label="Velocity" value={position ? `${position.velocity.toLocaleString()} km/h` : '—'} />
+            <StatCard icon={<Globe size={13} />}        label="Latitude"  value={position ? `${position.latitude.toFixed(4)}°`  : '—'} />
+            <StatCard icon={<Navigation size={13} />}   label="Longitude" value={position ? `${position.longitude.toFixed(4)}°` : '—'} />
+            <StatCard icon={<MoveVertical size={13} />} label="Altitude"  value={position ? `${position.altitude} km`           : '—'} />
+            <StatCard icon={<Gauge size={13} />}        label="Velocity"  value={position ? `${position.velocity.toLocaleString()} km/h` : '—'} />
           </div>
         </div>
       </div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(24px,4vw,40px) clamp(20px,5vw,48px)' }}>
 
-        {/* ── World Map Tracker ───────────────────────
-            DROP-IN ZONE: Replace the <image> tag below with your own world-map.svg
-            The viewBox is 0 0 1000 500 — your SVG must match this coordinate space.
-            Place your world-map.svg in /public/images/world-map.svg and update the href.
-        ─────────────────────────────────────────── */}
-        <div style={{ width: '100%', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '28px', background: '#020508', position: 'relative' }}>
+        {/* World Map Tracker */}
+        <div style={{ width: '100%', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '28px', background: '#020a14', position: 'relative' }}>
           <svg
             viewBox={`0 0 ${MAP_W} ${MAP_H}`}
             style={{ width: '100%', display: 'block' }}
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* ── Ocean background ── */}
+            {/* Ocean */}
             <rect width={MAP_W} height={MAP_H} fill="#020a14" />
 
-            {/* ── World map SVG background ──
-                SWAP THIS: replace href with "/images/world-map.svg" once you have it.
-                The map must be a flat equirectangular projection to align with lat/lng math.
-                Free source: https://simplemaps.com/resources/svg-world or naturalearthdata.com
-            ── */}
-            {/* World map — simplemaps SVG, equirectangular, rescaled to fit viewBox */}
-<image
-  href="/images/world-map.svg"
-  x={0} y={-43}
-  width={MAP_W} height={MAP_H + 86}
-  preserveAspectRatio="none"
-  style={{
-    filter: 'brightness(0) invert(1)',
-    opacity: 0.08,
-  }}
-/>
+            {/* World map SVG background
+                The simplemaps SVG has viewBox 0 0 2000 857
+                We scale it to fit our 1000x500 space
+                brightness(0) converts #ececec grey to black, invert(1) flips to white
+            */}
+            <image
+              href="/images/world-map.svg"
+              x={0}
+              y={0}
+              width={MAP_W}
+              height={MAP_H}
+              preserveAspectRatio="xMidYMid meet"
+              style={{
+                filter:  'brightness(0) invert(1)',
+                opacity: 0.1,
+              }}
+            />
 
-            {/* ── Latitude grid lines ── */}
+            {/* Latitude lines */}
             {[-60,-30,0,30,60].map(lat => {
               const y = ((90 - lat) / 180) * MAP_H
               return (
@@ -133,7 +124,7 @@ export function ISSTracker({ initialPosition, crew }: Props) {
               )
             })}
 
-            {/* ── Longitude grid lines ── */}
+            {/* Longitude lines */}
             {[-120,-60,0,60,120].map(lng => {
               const x = ((lng + 180) / 360) * MAP_W
               return (
@@ -144,58 +135,47 @@ export function ISSTracker({ initialPosition, crew }: Props) {
               )
             })}
 
-            {/* ── Equator ── */}
+            {/* Equator */}
             <line x1={0} y1={MAP_H/2} x2={MAP_W} y2={MAP_H/2} stroke="rgba(59,158,255,0.18)" strokeWidth={1} strokeDasharray="4 4" />
 
-            {/* ── ISS trail ── */}
+            {/* Trail */}
             {trail.map((pt, i) => {
               if (i === 0) return null
               const prev = trail[i - 1]
               if (Math.abs(pt.x - prev.x) > MAP_W / 2) return null
               return (
-                <line
-                  key={i}
-                  x1={prev.x} y1={prev.y} x2={pt.x} y2={pt.y}
-                  stroke="#3b9eff"
-                  strokeWidth={1.5}
+                <line key={i} x1={prev.x} y1={prev.y} x2={pt.x} y2={pt.y}
+                  stroke="#3b9eff" strokeWidth={1.5}
                   strokeOpacity={(i / trail.length) * 0.7}
                 />
               )
             })}
 
-            {/* ── ISS marker — satellite icon ── */}
+            {/* ISS satellite marker */}
             {dot && (
               <g transform={`translate(${dot.x}, ${dot.y})`}>
-                {/* Outer pulse */}
                 <circle cx={0} cy={0} r={14} fill="none" stroke="#34d897" strokeWidth={1} strokeOpacity={0.2}>
                   <animate attributeName="r"              values="10;22;10" dur="2.5s" repeatCount="indefinite" />
                   <animate attributeName="stroke-opacity" values="0.4;0;0.4" dur="2.5s" repeatCount="indefinite" />
                 </circle>
-                {/* Inner glow */}
                 <circle cx={0} cy={0} r={8} fill="rgba(52,216,151,0.15)" />
-                {/* Satellite body — horizontal bar */}
                 <rect x={-8} y={-2} width={16} height={4} rx={1} fill="#34d897" />
-                {/* Solar panels */}
-                <rect x={-14} y={-5} width={5} height={10} rx={1} fill="#3b9eff" opacity={0.9} />
-                <rect x={9}   y={-5} width={5} height={10} rx={1} fill="#3b9eff" opacity={0.9} />
-                {/* Center dot */}
+                <rect x={-14} y={-5} width={5}  height={10} rx={1} fill="#3b9eff" opacity={0.9} />
+                <rect x={9}   y={-5} width={5}  height={10} rx={1} fill="#3b9eff" opacity={0.9} />
                 <circle cx={0} cy={0} r={2.5} fill="#f0f4fa" />
               </g>
             )}
           </svg>
 
-          {/* Timestamp overlay */}
-          <div style={{ position: 'absolute', bottom: '12px', right: '16px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'rgba(240,244,250,0.3)', letterSpacing: '0.05em' }}>
+          <div style={{ position: 'absolute', bottom: '12px', right: '16px', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'rgba(240,244,250,0.3)' }}>
             {lastUpdate.toLocaleTimeString()}
           </div>
-
-          {/* Corner label */}
           <div style={{ position: 'absolute', top: '12px', left: '16px', fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(59,158,255,0.5)' }}>
             Equirectangular Projection
           </div>
         </div>
 
-        {/* ── Crew Section ────────────────────────── */}
+        {/* Crew */}
         {crewList.length > 0 && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
@@ -211,12 +191,8 @@ export function ISSTracker({ initialPosition, crew }: Props) {
                     <Satellite size={14} color="#3b9eff" />
                   </div>
                   <div>
-                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#f0f4fa', margin: '0 0 3px' }}>
-                      {member.name}
-                    </p>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#34d897' }}>
-                      {member.craft}
-                    </span>
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#f0f4fa', margin: '0 0 3px' }}>{member.name}</p>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#34d897' }}>{member.craft}</span>
                   </div>
                 </div>
               ))}
@@ -224,7 +200,6 @@ export function ISSTracker({ initialPosition, crew }: Props) {
           </div>
         )}
 
-        {/* Back link */}
         <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <a href="/live" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#3b9eff', textDecoration: 'none' }}>
             ← Back to Live
@@ -235,19 +210,14 @@ export function ISSTracker({ initialPosition, crew }: Props) {
   )
 }
 
-// ── Stat card ─────────────────────────────────────────────────
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div style={{ background: '#0b0f18', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '14px 16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
         <span style={{ color: 'rgba(240,244,250,0.35)' }}>{icon}</span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(240,244,250,0.35)' }}>
-          {label}
-        </span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(240,244,250,0.35)' }}>{label}</span>
       </div>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#34d897', letterSpacing: '0.05em' }}>
-        {value}
-      </span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#34d897', letterSpacing: '0.05em' }}>{value}</span>
     </div>
   )
-                  }
+}
