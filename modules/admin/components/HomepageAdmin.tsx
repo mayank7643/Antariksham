@@ -16,11 +16,14 @@ interface Props {
 const SECTION_LABELS: Record<string, string> = {
   'hero':          'Hero Section',
   'status-strip':  'Status Strip',
+  'status':        'Status Strip',
   'latest-news':   'Latest News',
+  'news':          'Latest News',
   'missions':      'Missions',
   'apod':          'NASA APOD',
   'learn':         'Learn & Explore',
   'gallery':       'Gallery',
+  'live':          'Live Systems',
   'about':         'About',
 }
 
