@@ -1,17 +1,28 @@
-import type { Metadata }          from 'next'
-import { getKnowledgeArticles }   from '@/modules/learn/services/getKnowledgeArticles'
-import { LearnPage }              from '@/modules/learn/components/LearnPage'
-import { siteConfig }             from '@/config/site'
+import type { Metadata }                from 'next'
+import { notFound }                     from 'next/navigation'
+import { getKnowledgeArticleBySlug }    from '@/modules/learn/services/getKnowledgeArticles'
+import { LearnArticlePage }             from '@/modules/learn/components/LearnArticlePage'
+import { siteConfig }                   from '@/config/site'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title:       `Learn — ${siteConfig.name}`,
-  description: 'Deep-dive articles on orbital mechanics, astrophysics, black holes, relativity and the mathematics powering space exploration.',
+interface Props {
+  params: { slug: string }
 }
 
-export default async function LearnRoute() {
-  const articles = await getKnowledgeArticles()
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const article = await getKnowledgeArticleBySlug(params.slug)
+  if (!article) return { title: 'Not Found' }
 
-  return <LearnPage articles={articles} />
+  return {
+    title:       `${article.title} — ${siteConfig.name}`,
+    description: article.excerpt,
+  }
+}
+
+export default async function LearnArticleRoute({ params }: Props) {
+  const article = await getKnowledgeArticleBySlug(params.slug)
+  if (!article) notFound()
+
+  return <LearnArticlePage article={article} />
 }
