@@ -15,6 +15,7 @@ import type {
 import {
   Save, Eye, Globe, ChevronDown, X, Plus, AlertCircle,
 } from 'lucide-react'
+import { MediaLibrary } from '@/modules/admin/components/MediaLibrary'
 
 // ── Constants ─────────────────────────────────────────────────
 
@@ -31,17 +32,18 @@ const ARTICLE_TYPES: { value: ArticleType; label: string }[] = [
 // ── Types ─────────────────────────────────────────────────────
 
 interface FormState {
-  title:         string
-  slug:          string
-  excerpt:       string
-  content:       string
-  featuredImage: string
-  authorId:      string
-  status:        ArticleStatus
-  articleType:   ArticleType
-  featured:      boolean
-  categoryIds:   string[]
-  tagIds:        string[]
+  title:              string
+  slug:               string
+  excerpt:            string
+  content:            string
+  featuredImage:      string
+  authorId:           string
+  status:             ArticleStatus
+  articleType:        ArticleType
+  featured:           boolean
+  categoryIds:        string[]
+  tagIds:             string[]
+  _showMediaPicker:   boolean
 }
 
 interface Props {
@@ -67,6 +69,7 @@ export function ArticleForm({ mode, article, categories, tags, authors }: Props)
     status:        article?.status        || 'draft',
     articleType:   article?.articleType   || 'explainer',
     featured:      article?.featured      || false,
+    _showMediaPicker: false,
     categoryIds:   article?.categoryIds   || [],
     tagIds:        article?.tagIds        || [],
   })
@@ -207,14 +210,56 @@ export function ArticleForm({ mode, article, categories, tags, authors }: Props)
 
         {/* Featured image */}
         <div>
-          <FieldLabel hint="Paste an image URL (NASA, Unsplash, etc.)">Featured Image URL</FieldLabel>
-          <input
-            value={form.featuredImage}
-            onChange={e => set('featuredImage', e.target.value)}
-            placeholder="https://…"
-            style={inputStyle({})}
-          />
-          {form.featuredImage && (
+          <FieldLabel hint="Upload via Media Library or paste a URL directly">Featured Image</FieldLabel>
+
+          {/* URL input + Media Library picker toggle */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+            <input
+              value={form.featuredImage}
+              onChange={e => set('featuredImage', e.target.value)}
+              placeholder="https://… or pick from Media Library →"
+              style={{ ...inputStyle({}), flex: 1 }}
+            />
+            <button
+              type="button"
+              onClick={() => set('_showMediaPicker', !form._showMediaPicker)}
+              style={{
+                flexShrink:    0,
+                padding:       '0 14px',
+                background:    form._showMediaPicker ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
+                border:        '1px solid',
+                borderColor:   form._showMediaPicker ? 'var(--accent)' : 'rgba(255,255,255,0.12)',
+                borderRadius:  '6px',
+                color:         form._showMediaPicker ? '#07090c' : 'rgba(240,244,250,0.7)',
+                fontFamily:    'var(--font-mono)',
+                fontSize:      '10px',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                cursor:        'pointer',
+                whiteSpace:    'nowrap',
+                transition:    'all 0.15s',
+              }}
+            >
+              {form._showMediaPicker ? '✕ Close' : '📁 Browse'}
+            </button>
+          </div>
+
+          {/* Inline media picker */}
+          {form._showMediaPicker && (
+            <div style={{ marginTop: '12px', padding: '20px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: '10px' }}>
+              <MediaLibrary
+                pickerMode
+                defaultBucket="article-images"
+                onPick={url => {
+                  set('featuredImage', url)
+                  set('_showMediaPicker', false)
+                }}
+              />
+            </div>
+          )}
+
+          {/* Image preview */}
+          {form.featuredImage && !form._showMediaPicker && (
             <div style={{ marginTop: '10px', borderRadius: '8px', overflow: 'hidden', aspectRatio: '16/5', background: 'var(--surface)', border: '1px solid var(--border)' }}>
               <img
                 src={form.featuredImage}
