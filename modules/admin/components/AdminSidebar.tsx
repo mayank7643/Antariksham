@@ -28,7 +28,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Homepage',         href: '/admin/homepage',  icon: <Globe           size={15} /> },
   { label: 'Launches',         href: '/admin/launches',  icon: <Rocket          size={15} />, badge: 'Soon' },
   { label: 'Media Library',    href: '/admin/media',     icon: <Image           size={15} /> },
-  { label: 'SEO Center',       href: '/admin/seo',       icon: <Search          size={15} />, badge: 'Soon' },
+  { label: 'SEO Center',       href: '/admin/seo',       icon: <Search          size={15} /> },
 ]
 
 export function AdminSidebar() {
